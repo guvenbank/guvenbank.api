@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Entities
 {
-    public class BankAccount
+    public class BankAccount : IEntity
     {
         public Guid Id { get; set; }
         public string No { get; set; } //hesap numarası

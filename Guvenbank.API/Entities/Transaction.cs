@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Entities
 {
-    public class Transaction
+    public class Transaction : IEntity
     {
         public Guid Id { get; set; }
         public int From { get; set; } //gönderen hesap no

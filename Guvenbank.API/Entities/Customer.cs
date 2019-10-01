@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Entities
 {
-    public class Customer
+    public class Customer : IEntity
     {
         public Guid Id { get; set; }
         public int No { get; set; } //müşteri numarası

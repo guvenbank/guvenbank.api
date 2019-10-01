@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Entities
 {
-    public class CreditApplication
+    public class CreditApplication : IEntity
     {
         public Guid Id { get; set; }
         public int CustomerNo { get; set; }
