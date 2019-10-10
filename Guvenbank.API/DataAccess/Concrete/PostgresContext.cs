@@ -16,7 +16,6 @@ namespace DataAccess.Concrete
         public DbSet<Customer> Customers { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<CreditApplication> CreditApplications { get; set; }
 
         public readonly AppSettings appSettings;
 
