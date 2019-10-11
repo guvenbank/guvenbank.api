@@ -72,6 +72,7 @@ namespace API
             services.AddScoped<IAuthService, AuthManager>();
             services.AddScoped<ICustomerService, CustomerManager>();
             services.AddScoped<IBankAccountService, BankAccountManager>();
+            services.AddScoped<ITransactionService, TransactionManager>();
 
             services.AddScoped<IBankAccountDal, BankAccountDal>();
             services.AddScoped<ITransactionDal, TransactionDal>();

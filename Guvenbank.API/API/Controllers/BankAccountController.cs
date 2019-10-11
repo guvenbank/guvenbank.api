@@ -26,16 +26,19 @@ namespace API.Controllers
 
         // GET: api/BankAccount
         [HttpGet]
-        public IEnumerable<BankAccountModel> Get()
+        public IActionResult Get()
         {
             Customer customer = customerService.Get(User.Identity.Name);
 
             List<BankAccount> bankAccounts = bankAccountService.GetList(customer.No);
 
+            List<object> bankAccountObjects = new List<object>();
             foreach (BankAccount bankAccount in bankAccounts)
             {
-                yield return new BankAccountModel { Balance = bankAccount.Balance, No = bankAccount.No };
+                bankAccountObjects.Add(new { balance = bankAccount.Balance, no = bankAccount.No });
             }
+
+            return Ok(new { status = "success", bankAccounts = bankAccountObjects });
         }
 
         // GET: api/BankAccount/5
