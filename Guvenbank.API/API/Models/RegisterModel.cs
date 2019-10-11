@@ -34,9 +34,5 @@ namespace API.Models
         [Required]
         [RegularExpression("^\\d{11}$")]
         public string TC { get; set; }
-
-        public string Token { get; set; }
-
-        public int CustomerNo { get; set; }
     }
 }

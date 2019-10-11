@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Models;
 using Business.Abstract;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BankAccountController : ControllerBase
     {
         ICustomerService customerService;
@@ -27,31 +29,51 @@ namespace API.Controllers
         public IEnumerable<BankAccountModel> Get()
         {
             Customer customer = customerService.Get(User.Identity.Name);
+
+            List<BankAccount> bankAccounts = bankAccountService.GetList(customer.No);
+
+            foreach (BankAccount bankAccount in bankAccounts)
+            {
+                yield return new BankAccountModel { Balance = bankAccount.Balance, No = bankAccount.No };
+            }
         }
 
         // GET: api/BankAccount/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(Guid id)
+        [HttpGet("{no}", Name = "Get")]
+        public IActionResult Get(int no)
         {
-            return "value";
+            BankAccount bankAccount = bankAccountService.Get(no);
+
+            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance });
         }
 
         // POST: api/BankAccount
         [HttpPost]
-        public void Post([FromBody] BankAccountModel value)
+        public IActionResult Post()
         {
+            Customer customer = customerService.Get(User.Identity.Name);
+
+            int totalCount = bankAccountService.TotalCount(customer.No);
+            int bankAccountNo = totalCount + 1;
+
+            BankAccount bankAccount = new BankAccount();
+            bankAccount.CustomerNo = customer.No;
+            bankAccount.IsActive = true;
+            bankAccount.Balance = 0.0m;
+            bankAccount.No = bankAccountNo;
+
+            bankAccountService.Add(bankAccount);
+
+            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance });
         }
 
-        // PUT: api/BankAccount/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] BankAccountModel value)
+        // DELETE: api/BankAccount/5
+        [HttpDelete("{no}")]
+        public IActionResult Delete(int no)
         {
-        }
+            bankAccountService.Delete(no);
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(Guid id)
-        {
+            return Ok(new { status = "success" });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DataAccess.Abstract;
+﻿using Business.Abstract;
+using DataAccess.Abstract;
 using Entities;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace Business.Concrete
 {
-    public class BankAccountManager
+    public class BankAccountManager : IBankAccountService
     {
         IBankAccountDal bankAccountDal;
 
@@ -20,9 +21,9 @@ namespace Business.Concrete
             bankAccountDal.Add(bankAccount);
         }
 
-        public void Delete(Guid id)
+        public void Delete(int no)
         {
-            BankAccount bankAccount = Get(id);
+            BankAccount bankAccount = bankAccountDal.Get(x => x.No == no);
             bankAccount.IsActive = false;
 
             Update(bankAccount);
@@ -33,14 +34,14 @@ namespace Business.Concrete
             return bankAccountDal.Get(x => x.Id == id);
         }
 
-        public List<BankAccount> GetList(Guid customerId)
+        public BankAccount Get(int no)
         {
-            return bankAccountDal.GetList(x => x.Id == customerId);
+            return bankAccountDal.Get(x => x.No == no);
         }
 
-        public List<BankAccount> GetList()
+        public List<BankAccount> GetList(int customerNo)
         {
-            return bankAccountDal.GetList();
+            return bankAccountDal.GetList(x => x.CustomerNo == customerNo && x.IsActive == true);
         }
 
         public bool Update(BankAccount bankAccount)
@@ -48,6 +49,11 @@ namespace Business.Concrete
             bankAccountDal.Update(bankAccount);
 
             return true;
+        }
+
+        public int TotalCount(int customerNo)
+        {
+            return bankAccountDal.GetList(x => x.CustomerNo == customerNo).Count;
         }
     }
 }

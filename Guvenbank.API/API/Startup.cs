@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace API
 {
@@ -69,10 +70,21 @@ namespace API
             });
 
             services.AddScoped<IAuthService, AuthManager>();
+            services.AddScoped<ICustomerService, CustomerManager>();
+            services.AddScoped<IBankAccountService, BankAccountManager>();
 
             services.AddScoped<IBankAccountDal, BankAccountDal>();
             services.AddScoped<ITransactionDal, TransactionDal>();
             services.AddScoped<ICustomerDal, CustomerDal>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "Güvenbank API",
+                    Version = "v1"
+                });
+            });
 
         }
 
@@ -93,6 +105,9 @@ namespace API
             app.UseAuthentication();
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Güvenbank API v1"); } );
         }
     }
 }

@@ -36,10 +36,8 @@ namespace API.Controllers
             (customer, token) = authService.Login(loginModel.TC, loginModel.Password);
 
             if (customer == null) return BadRequest(new { message = "TC or password is incorrect." });
-
-            RegisterModel userModel = new RegisterModel { FirstName = customer.Name, LastName = customer.LastName, TC = customer.IdNo, Token = token, PhoneNumber = customer.PhoneNumber, CustomerNo = customer.No };
-
-            return Ok(userModel);
+            
+            return Ok(new { status = "success", FirstName = customer.Name, LastName = customer.LastName, TC = customer.IdNo, PhoneNumber = customer.PhoneNumber, Token = token, No = customer.No } );
         }
 
         // POST: api/auth/register
@@ -54,18 +52,17 @@ namespace API.Controllers
 
                 userModel.LastName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userModel.LastName.Trim().ToLower());
 
-                userModel.CustomerNo =  Convert.ToInt32("3540" + userModel.TC.Substring(5, 6));
+                int customerNo =  Convert.ToInt32("99" + userModel.TC.Substring(5, 6));
 
-                Customer customer = new Customer { Name = userModel.FirstName, LastName = userModel.LastName, IdNo = userModel.TC, Password = userModel.Password, PhoneNumber = userModel.PhoneNumber, No = userModel.CustomerNo };
+                Customer customer = new Customer { Name = userModel.FirstName, LastName = userModel.LastName, IdNo = userModel.TC, Password = userModel.Password, PhoneNumber = userModel.PhoneNumber, No = customerNo };
 
                 string token = authService.Register(customer);
 
                 if (string.IsNullOrEmpty(token)) return BadRequest(new { message = "User already registered." });
 
-                userModel.Token = token;
                 userModel.Password = null;
 
-                return Ok(userModel);
+                return Ok(new { status = "success", FirstName = customer.Name, LastName = customer.LastName, TC = customer.IdNo, PhoneNumber = customer.PhoneNumber, Token = token, No = customer.No });
             }
             else return BadRequest();
         }

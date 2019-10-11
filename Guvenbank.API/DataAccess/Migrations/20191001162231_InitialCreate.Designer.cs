@@ -32,7 +32,7 @@ namespace DataAccess.Migrations
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<string>("No");
+                    b.Property<int>("No");
 
                     b.HasKey("Id");
 

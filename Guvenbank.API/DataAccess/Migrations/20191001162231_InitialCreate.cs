@@ -12,7 +12,7 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    No = table.Column<string>(nullable: true),
+                    No = table.Column<int>(nullable: false),
                     CustomerNo = table.Column<int>(nullable: false),
                     Balance = table.Column<decimal>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false)
