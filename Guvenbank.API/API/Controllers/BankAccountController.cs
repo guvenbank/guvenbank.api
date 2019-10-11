@@ -35,7 +35,7 @@ namespace API.Controllers
             List<object> bankAccountObjects = new List<object>();
             foreach (BankAccount bankAccount in bankAccounts)
             {
-                bankAccountObjects.Add(new { balance = bankAccount.Balance, no = bankAccount.No });
+                bankAccountObjects.Add(new { balance = bankAccount.Balance, no = bankAccount.No, createdDate = bankAccount.Date });
             }
 
             return Ok(new { status = "success", bankAccounts = bankAccountObjects });
@@ -47,7 +47,7 @@ namespace API.Controllers
         {
             BankAccount bankAccount = bankAccountService.Get(no);
 
-            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance });
+            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
         }
 
         // POST: api/BankAccount
@@ -64,10 +64,11 @@ namespace API.Controllers
             bankAccount.IsActive = true;
             bankAccount.Balance = 0.0m;
             bankAccount.No = bankAccountNo;
+            bankAccount.Date = DateTime.Now;
 
             bankAccountService.Add(bankAccount);
 
-            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance });
+            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
         }
 
         // DELETE: api/BankAccount/5

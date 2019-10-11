@@ -18,7 +18,6 @@ namespace API.Controllers
     {
         ICustomerService customerService;
         ITransactionService transactionService;
-
         public TransactionController(ICustomerService customerService, ITransactionService transactionService)
         {
             this.customerService = customerService;

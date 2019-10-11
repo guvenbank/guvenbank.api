@@ -44,7 +44,7 @@ namespace Business.Concrete
             senderBankAccount.Balance -= amount;
             receiverBankAccount.Balance += amount;
 
-            Transaction transaction = new Transaction { Amount = amount, From = senderBankAccountNo, FromCustomerNo = senderCustomerNo, To = receiverBankAccountNo, ToCustomerNo = receiverCustomerNo, Summary = summary, ReceiverFullName = receiverCustomer.Name + " " + receiverCustomer.LastName, Type = TransactionTypes.External };
+            Transaction transaction = new Transaction { Amount = amount, From = senderBankAccountNo, FromCustomerNo = senderCustomerNo, To = receiverBankAccountNo, ToCustomerNo = receiverCustomerNo, Summary = summary, ReceiverFullName = receiverCustomer.Name + " " + receiverCustomer.LastName, Type = TransactionTypes.External, Date = DateTime.Now };
 
             bankAccountDal.Update(senderBankAccount);
             bankAccountDal.Update(receiverBankAccount);
@@ -74,7 +74,7 @@ namespace Business.Concrete
             senderBankAccount.Balance -= amount;
             receiverBankAccount.Balance += amount;
 
-            Transaction transaction = new Transaction { Amount = amount, From = senderBankAccountNo, FromCustomerNo = senderCustomerNo, To = receiverBankAccountNo, ToCustomerNo = senderCustomerNo , Summary = summary, ReceiverFullName = senderCustomer.Name + " " + senderCustomer.LastName, Type = TransactionTypes.Internal };
+            Transaction transaction = new Transaction { Amount = amount, From = senderBankAccountNo, FromCustomerNo = senderCustomerNo, To = receiverBankAccountNo, ToCustomerNo = senderCustomerNo , Summary = summary, ReceiverFullName = senderCustomer.Name + " " + senderCustomer.LastName, Type = TransactionTypes.Internal, Date = DateTime.Now };
 
             bankAccountDal.Update(senderBankAccount);
             bankAccountDal.Update(receiverBankAccount);
