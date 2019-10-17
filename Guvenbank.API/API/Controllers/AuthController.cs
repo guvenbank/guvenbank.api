@@ -35,7 +35,7 @@ namespace API.Controllers
 
             (customer, token) = authService.Login(loginModel.TC, loginModel.Password);
 
-            if (customer == null) return BadRequest(new { status = "failed", message = "TC ya da şifre yanlış." });
+            if (customer == null) return Ok(new { status = "failed", message = "TC ya da şifre yanlış." });
             
             return Ok(new { status = "success", FirstName = customer.Name, LastName = customer.LastName, TC = customer.IdNo, PhoneNumber = customer.PhoneNumber, Token = token, No = customer.No } );
         }
@@ -58,7 +58,7 @@ namespace API.Controllers
 
                 string token = authService.Register(customer);
 
-                if (string.IsNullOrEmpty(token)) return BadRequest(new { status = "failed", message = "Zaten bankamızın müşterisisiniz. Lütfen giriş yapmayı deneyin." });
+                if (string.IsNullOrEmpty(token)) return Ok(new { status = "failed", message = "Zaten bankamızın müşterisisiniz. Lütfen giriş yapmayı deneyin." });
 
                 userModel.Password = null;
 

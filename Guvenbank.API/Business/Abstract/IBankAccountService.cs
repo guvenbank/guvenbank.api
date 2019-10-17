@@ -9,11 +9,11 @@ namespace Business.Abstract
     {
         void Add(BankAccount bankAccount);
 
-        BankAccount Get(int no);
+        BankAccount Get(int no, int customerNo);
 
         BankAccount Get(Guid id);
 
-        void Delete(int no);
+        void Delete(int no, int customerNo);
 
         bool Update(BankAccount bankAccount);
 

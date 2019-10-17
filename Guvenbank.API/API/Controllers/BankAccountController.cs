@@ -45,7 +45,11 @@ namespace API.Controllers
         [HttpGet("{no}", Name = "Get")]
         public IActionResult Get(int no)
         {
-            BankAccount bankAccount = bankAccountService.Get(no);
+            Customer customer = customerService.Get(User.Identity.Name);
+
+            BankAccount bankAccount = bankAccountService.Get(no, customer.No);
+
+            if (bankAccount == null) return NotFound();
 
             return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
         }
@@ -57,7 +61,7 @@ namespace API.Controllers
             Customer customer = customerService.Get(User.Identity.Name);
 
             int totalCount = bankAccountService.TotalCount(customer.No);
-            int bankAccountNo = totalCount + 1;
+            int bankAccountNo = totalCount + 1001;
 
             BankAccount bankAccount = new BankAccount();
             bankAccount.CustomerNo = customer.No;
@@ -75,9 +79,44 @@ namespace API.Controllers
         [HttpDelete("{no}")]
         public IActionResult Delete(int no)
         {
-            bankAccountService.Delete(no);
+            Customer customer = customerService.Get(User.Identity.Name);
+
+            bankAccountService.Delete(no, customer.No);
 
             return Ok(new { status = "success" });
+        }
+
+        // POST: api/BankAccount/Deposit
+        [HttpPost("deposit")]
+        public IActionResult Deposit(int no, decimal amount)
+        {
+            Customer customer = customerService.Get(User.Identity.Name);
+
+            BankAccount bankAccount = bankAccountService.Get(no, customer.No);
+            bankAccount.Balance += amount;
+
+            if (amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
+
+            bankAccountService.Update(bankAccount);
+
+            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
+        }
+
+        // POST: api/BankAccount/Withdrawal
+        [HttpPost("withdrawal")]
+        public IActionResult Withdrawal(int no, decimal amount)
+        {
+            Customer customer = customerService.Get(User.Identity.Name);
+
+            BankAccount bankAccount = bankAccountService.Get(no, customer.No);
+            bankAccount.Balance -= amount;
+
+            if (amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
+            if (bankAccount.Balance <= 0 || bankAccount.Balance < amount) return Ok(new { status = "failed", message = "Hesap bakiyesi yetersiz." });
+
+            bankAccountService.Update(bankAccount);
+
+            return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
         }
     }
 }

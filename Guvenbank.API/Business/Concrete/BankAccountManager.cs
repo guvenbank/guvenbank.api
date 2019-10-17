@@ -21,9 +21,12 @@ namespace Business.Concrete
             bankAccountDal.Add(bankAccount);
         }
 
-        public void Delete(int no)
+        public void Delete(int no, int customerNo)
         {
-            BankAccount bankAccount = bankAccountDal.Get(x => x.No == no);
+            BankAccount bankAccount = bankAccountDal.Get(x => x.CustomerNo == customerNo && x.No == no && x.IsActive == true);
+
+            if (bankAccount == null) return;
+
             bankAccount.IsActive = false;
 
             Update(bankAccount);
@@ -31,12 +34,12 @@ namespace Business.Concrete
 
         public BankAccount Get(Guid id)
         {
-            return bankAccountDal.Get(x => x.Id == id);
+            return bankAccountDal.Get(x => x.Id == id && x.IsActive == true);
         }
 
-        public BankAccount Get(int no)
+        public BankAccount Get(int no, int customerNo)
         {
-            return bankAccountDal.Get(x => x.No == no);
+            return bankAccountDal.Get(x => x.CustomerNo == customerNo && x.No == no && x.IsActive == true);
         }
 
         public List<BankAccount> GetList(int customerNo)
