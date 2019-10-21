@@ -103,8 +103,8 @@ namespace API.Controllers
         }
 
         // POST: api/BankAccount/Withdrawal
-        [HttpPost("withdrawal")]
-        public IActionResult Withdrawal(int no, decimal amount)
+        [HttpPost("withdraw")]
+        public IActionResult Withdraw(int no, decimal amount)
         {
             Customer customer = customerService.Get(User.Identity.Name);
 
