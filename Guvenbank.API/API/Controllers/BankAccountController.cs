@@ -81,6 +81,10 @@ namespace API.Controllers
         {
             Customer customer = customerService.Get(User.Identity.Name);
 
+            BankAccount bankAccount = bankAccountService.Get(no, customer.No);
+            
+            if(bankAccount.Balance > 0) return Ok(new { status = "failed", message = "Lütfen hesabın bakiyesini sıfırlayın." });
+
             bankAccountService.Delete(no, customer.No);
 
             return Ok(new { status = "success" });
@@ -88,31 +92,31 @@ namespace API.Controllers
 
         // POST: api/BankAccount/Deposit
         [HttpPost("deposit")]
-        public IActionResult Deposit(int no, decimal amount)
+        public IActionResult Deposit(DepositWithdrawModel depositWithdrawModel)
         {
             Customer customer = customerService.Get(User.Identity.Name);
 
-            BankAccount bankAccount = bankAccountService.Get(no, customer.No);
-            bankAccount.Balance += amount;
+            BankAccount bankAccount = bankAccountService.Get(depositWithdrawModel.No, customer.No);
+            bankAccount.Balance += depositWithdrawModel.Amount;
 
-            if (amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
+            if (depositWithdrawModel.Amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
 
             bankAccountService.Update(bankAccount);
 
             return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
         }
 
-        // POST: api/BankAccount/Withdrawal
+        // POST: api/BankAccount/Withdraw
         [HttpPost("withdraw")]
-        public IActionResult Withdraw(int no, decimal amount)
+        public IActionResult Withdraw(DepositWithdrawModel depositWithdrawModel)
         {
             Customer customer = customerService.Get(User.Identity.Name);
 
-            BankAccount bankAccount = bankAccountService.Get(no, customer.No);
-            bankAccount.Balance -= amount;
+            BankAccount bankAccount = bankAccountService.Get(depositWithdrawModel.No, customer.No);
+            bankAccount.Balance -= depositWithdrawModel.Amount;
 
-            if (amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
-            if (bankAccount.Balance <= 0 || bankAccount.Balance < amount) return Ok(new { status = "failed", message = "Hesap bakiyesi yetersiz." });
+            if (depositWithdrawModel.Amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
+            if (bankAccount.Balance <= 0 || bankAccount.Balance < depositWithdrawModel.Amount) return Ok(new { status = "failed", message = "Hesap bakiyesi yetersiz." });
 
             bankAccountService.Update(bankAccount);
 
