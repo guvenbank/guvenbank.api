@@ -97,10 +97,10 @@ namespace API.Controllers
             Customer customer = customerService.Get(User.Identity.Name);
 
             BankAccount bankAccount = bankAccountService.Get(depositWithdrawModel.No, customer.No);
-            bankAccount.Balance += depositWithdrawModel.Amount;
 
             if (depositWithdrawModel.Amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
 
+            bankAccount.Balance += depositWithdrawModel.Amount;
             bankAccountService.Update(bankAccount);
 
             return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });
@@ -113,11 +113,11 @@ namespace API.Controllers
             Customer customer = customerService.Get(User.Identity.Name);
 
             BankAccount bankAccount = bankAccountService.Get(depositWithdrawModel.No, customer.No);
-            bankAccount.Balance -= depositWithdrawModel.Amount;
 
             if (depositWithdrawModel.Amount <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
             if (bankAccount.Balance <= 0 || bankAccount.Balance < depositWithdrawModel.Amount) return Ok(new { status = "failed", message = "Hesap bakiyesi yetersiz." });
 
+            bankAccount.Balance -= depositWithdrawModel.Amount;
             bankAccountService.Update(bankAccount);
 
             return Ok(new { status = "success", bankAccount.No, bankAccount.Balance, createdDate = bankAccount.Date });

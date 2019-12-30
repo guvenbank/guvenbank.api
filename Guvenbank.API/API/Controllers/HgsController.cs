@@ -28,17 +28,17 @@ namespace API.Controllers
             this.bankAccountService = bankAccountService;
         }
 
-        [HttpGet("{no}", Name = "Get")]
+        // GET: api/BankAccount/5
+        [HttpGet("{no}")]
         public IActionResult Get(int no)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://207.154.196.92:5003/");
+            httpClient.BaseAddress = new Uri("http://172.17.0.2:5003/");
             HttpResponseMessage response = httpClient.GetAsync("api/account/" + no).Result;
 
             string responseBody = response.Content.ReadAsStringAsync().Result;
 
             JObject responseJson = JsonConvert.DeserializeObject(responseBody) as JObject;
-
 
             return Ok(responseJson);
         }
@@ -47,9 +47,11 @@ namespace API.Controllers
         public IActionResult Find([FromBody] TcModel tcModel)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://207.154.196.92:5003/");
+            httpClient.BaseAddress = new Uri("http://172.17.0.2:5003/");
 
-            var content = new StringContent(tcModel.ToString(), Encoding.UTF8, "application/json");
+            string jsonData = JsonConvert.SerializeObject(tcModel);
+
+            var content = new StringContent(jsonData.ToString(), Encoding.UTF8, "application/json");
             HttpResponseMessage response = httpClient.PostAsync("api/account/find", content).Result;
 
             string responseBody = response.Content.ReadAsStringAsync().Result;
@@ -63,9 +65,11 @@ namespace API.Controllers
         public IActionResult Post([FromBody] TcModel tcModel)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://207.154.196.92:5003/");
+            httpClient.BaseAddress = new Uri("http://172.17.0.2:5003/");
 
-            var content = new StringContent(tcModel.ToString(), Encoding.UTF8, "application/json");
+            string jsonData = JsonConvert.SerializeObject(tcModel);
+
+            var content = new StringContent(jsonData.ToString(), Encoding.UTF8, "application/json");
             HttpResponseMessage response = httpClient.PostAsync("api/account", content).Result;
 
             string responseBody = response.Content.ReadAsStringAsync().Result;
@@ -78,23 +82,34 @@ namespace API.Controllers
         [HttpPost("deposit")]
         public IActionResult Deposit([FromBody] HgsModel hgsModel)
         {
+            HttpClient httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://172.17.0.2:5003/");
+            HttpResponseMessage response = httpClient.GetAsync("api/account/" + hgsModel.HgsNo).Result;
+
+            string responseBody = response.Content.ReadAsStringAsync().Result;
+
+            if (responseBody.Contains("failed")) return Ok(new { status = "failed", message = "Lütfen HGS numaranızı kontrol edin." });
+
             Customer customer = customerService.Get(User.Identity.Name);
 
             BankAccount bankAccount = bankAccountService.Get(hgsModel.BankAccountNo, customer.No);
-            bankAccount.Balance -= hgsModel.Balance;
 
             if (hgsModel.Balance <= 0) return Ok(new { status = "failed", message = "Geçersiz tutar." });
             if (bankAccount.Balance <= 0 || bankAccount.Balance < hgsModel.Balance) return Ok(new { status = "failed", message = "Hesap bakiyesi yetersiz." });
 
+            bankAccount.Balance -= hgsModel.Balance;
+
             bankAccountService.Update(bankAccount);
 
-            HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://207.154.196.92:5003/");
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://172.17.0.2:5003/");
 
-            var content = new StringContent(hgsModel.ToString(), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = httpClient.PostAsync("api/account/deposit", content).Result;
+            string jsonData = JsonConvert.SerializeObject(hgsModel);
 
-            string responseBody = response.Content.ReadAsStringAsync().Result;
+            var content = new StringContent(jsonData.ToString(), Encoding.UTF8, "application/json");
+            response = httpClient.PostAsync("api/account/deposit", content).Result;
+
+            responseBody = response.Content.ReadAsStringAsync().Result;
 
             JObject responseJson = JsonConvert.DeserializeObject(responseBody) as JObject;
 
